@@ -12,7 +12,7 @@ def train_model():
     print("Loading data...")
     df = pd.read_csv("WA_Fn-UseC_-Telco-Customer-Churn.csv")
     
-    # 2. Preprocessing
+    # Preprocessing
     df['TotalCharges'] = pd.to_numeric(df['TotalCharges'], errors='coerce')
     df.dropna(inplace=True)
     
@@ -21,8 +21,7 @@ def train_model():
     
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.15, random_state=42)
     
-    # 3. Define Pipeline (Using your BEST hyperparameters found in the notebook)
-    # Note: I put the values you found earlier here
+    # Define Pipeline (Using your BEST hyperparameters found in the notebook)
     num_cols = X.select_dtypes(include=['int64', 'float64']).columns
     cat_cols = X.select_dtypes(include=['object']).columns
     
@@ -37,7 +36,7 @@ def train_model():
         ('cat', cat_transformer, cat_cols)
     ])
     
-    # The "Winner" Model
+    # The Winner Model
     model = XGBClassifier(
         n_estimators=415,
         learning_rate=0.1,
@@ -50,15 +49,15 @@ def train_model():
     
     pipeline = Pipeline(steps=[("preprocessor", preprocessor), ("model", model)])
     
-    # 4. Train
+    # Train
     print("Training model...")
     pipeline.fit(X_train, y_train)
     
-    # 5. Validate
+    # Validate
     score = roc_auc_score(y_test, pipeline.predict_proba(X_test)[:, 1])
     print(f"Model trained. Validation ROC-AUC: {score:.4f}")
     
-    # 6. Save
+    # Save
     joblib.dump(pipeline, 'churn_model.joblib')
     print("Model saved to churn_model.joblib")
 
